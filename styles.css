@@ -1,0 +1,92 @@
+/* 
+.pokemon-container a.AbilityLink {
+    color: aqua;
+}
+
+.pokemon-container .PokemonAltInfo {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-flex-wrap: wrap;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+}
+
+.pokemon-container body {
+    width: 100%;
+    min-height: 100vh;
+    font: 16px Verdana;
+}
+
+
+.pokemon-container .PokemonAltInfo-stats {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    margin: 1em 0;
+    min-width: 300px;
+    -webkit-box-flex: 1;
+    -webkit-flex: 1 0 300px;
+    -moz-box-flex: 1;
+    -ms-flex: 1 0 300px;
+    flex: 1 0 300px;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
+    -moz-box-orient: vertical;
+    -moz-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-box-pack: center;
+    -webkit-justify-content: center;
+    -moz-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -moz-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+
+.pokemon-container body.theme--dark, html.theme--dark {
+    color: #ccc;
+    background-color: #222;
+}
+
+.pokemon-container table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+.pokemon-container table {
+    display: table;
+    border-collapse: separate;
+    box-sizing: border-box;
+    text-indent: initial;
+    border-spacing: 2px;
+    border-color: gray;
+}
+
+.pokemon-container td {
+    display: table-cell;
+    vertical-align: inherit;
+}
+
+.pokemon-container td, .pokemon-container th {
+    padding: 0;
+}
+
+.pokemon-container .PokemonStats td, .pokemon-container .PokemonStats th {
+    padding: 0 .3em 0 0;
+} */
