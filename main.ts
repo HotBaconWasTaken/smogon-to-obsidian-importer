@@ -70,7 +70,31 @@ export default class MyPlugin extends Plugin {
 
 					let d: HTMLElement = el;
 					d.innerHTML = test;
+<<<<<<< Updated upstream
 				}
+=======
+
+					console.log('ciao');
+				}
+				
+				// document.addEventListener("DOMContentLoaded", function() { 
+				// 	let parent = el.querySelector('.pokemon-container');
+				// 	console.log(parent);
+				// });
+				
+				let parent = el.querySelector('table[class = PokemonSummary] > tbody > tr');
+				// let parent = el.querySelector('.pokemon-container');
+				console.log(parent);
+				let type_effectives_popup = el.getElementsByClassName('PokemonSummary-typeEffectivesPopup');
+				
+				if (parent) {
+					parent.addEventListener('mouseover', function() 
+					{ type_effectives_popup[0].className += ' PokemonSummary-typeEffectivesPopup-isDisplayed' })
+
+					parent.addEventListener('mouseout', function() 
+					{ type_effectives_popup[0].className = 'PokemonSummary-typeEffectivesPopup' })
+				} 
+>>>>>>> Stashed changes
 			},
 			100
 		);
