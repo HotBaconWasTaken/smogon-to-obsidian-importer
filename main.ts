@@ -2,181 +2,11 @@ import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Set
 import { fstat, readFileSync, writeFileSync, promises as fsPromises } from 'fs';
 import { dirname, join } from 'path';
 import { Request } from 'request';
+import { table } from 'console';
 
 export default class MyPlugin extends Plugin {
 
 	async onload() {
-
-		let test = `
-<div class="PokemonAltInfo">
-	<div class="PokemonAltInfo-sprite">
-		<div style="background-image:url(https://www.smogon.com/dex/media/sprites/xy/wooper.gif);"></div>
-	</div>
-	<div class="PokemonAltInfo-data">
-		<table class="PokemonSummary">
-			<tbody>
-				<tr>
-					<th><span class="PokemonSummary-type">Type</span></th>
-					<td>
-						<div class="PokemonSummary-types">
-							<ul class="TypeList">
-								<li><a class="Type water">Water</a></li><li><a class="Type ground">Ground</a></li>
-							</ul>
-						</div>
-						<div class="PokemonSummary-typeEffectivesPopup ">
-							<dl class="TypeEffectives">
-								<dt>Immune to:</dt>
-								<dd>
-									<ul class="TypeList">
-										<li><a class="Type electric">Electric</a></li>
-									</ul>
-								</dd>
-								<dt>Resists:</dt>
-								<dd>
-									<ul class="TypeList">
-										<li><a class="Type fire">Fire</a></li>
-										<li><a class="Type poison">Poison</a></li>
-										<li><a class="Type rock">Rock</a></li>
-										<li><a class="Type steel">Steel</a></li>
-									</ul>
-								</dd>
-								<dt>Very weak to:</dt>
-								<dd>
-									<ul class="TypeList">
-										<li><a class="Type grass">Grass</a></li>
-									</ul>
-								</dd>
-							</dl>
-						</div>
-					</td>
-				</tr>
-				<tr>
-					<th>Abilities</th>
-					<td>
-						<ul class="AbilityList">
-							<li><a class="AbilityLink"><span>Damp</span>
-									<div class="AbilityPreview">
-										Prevents Explosion/Self-Destruct/Aftermath while this Pokemon is active.
-									</div>
-							</a></li>
-							<li><a class="AbilityLink"><span>Unaware</span>
-									<div class="AbilityPreview">
-										This Pokemon ignores other Pokemon's stat stages when taking or doing damage.
-									</div>
-							</a></li>
-							<li><a class="AbilityLink"><span>Water Absorb</span>
-									<div class="AbilityPreview">
-										This Pokemon heals 1/4 of its max HP when hit by Water moves; Water immunity.
-									</div>
-							</a></li>
-						</ul>
-					</td>
-				</tr>
-				<tr>
-					<th>Tier</th>
-					<td>
-						<ul class="FormatList">
-							<li><a>LC</a></li>
-						</ul>
-					</td>
-				</tr>
-			</tbody>
-		</table>
-	</div>
-	<div class="PokemonAltInfo-stats">
-		<table class="PokemonStats">
-			<tbody>
-				<tr>
-					<th>HP:</th>
-					<td>55</td>
-					<td>
-						<div class="PokemonStats-bar" style="width:27.500000000000004%;background-color:#ff1800;"></div>
-					</td>
-				</tr>
-				<tr>
-					<th>Attack:</th>
-					<td>45</td>
-					<td>
-						<div class="PokemonStats-bar" style="width:22.5%;background-color:#ff0000;"></div>
-					</td>
-				</tr>
-				<tr>
-					<th>Defense:</th>
-					<td>45</td>
-					<td>
-						<div class="PokemonStats-bar" style="width:22.5%;background-color:#ff0000;"></div>
-					</td>
-				</tr>
-				<tr>
-					<th>Sp. Atk:</th>
-					<td>25</td>
-					<td>
-						<div class="PokemonStats-bar" style="width:12.5%;background-color:#ff0000;"></div>
-					</td>
-				</tr>
-				<tr>
-					<th>Sp. Def:</th>
-					<td>25</td>
-					<td>
-						<div class="PokemonStats-bar" style="width:12.5%;background-color:#ff0000;"></div>
-					</td>
-				</tr>
-				<tr class="PokemonStats-speed">
-					<th><span class="PokemonStats-speed-title">Speed</span><span>:</span></th>
-					<td>15</td>
-					<td class="PokemonStats-speed-cell">
-						<div class="PokemonStats-bar" style="width:7.5%;background-color:#ff0000;"></div>
-						<div class="PokemonStats-speed-popup">
-							<table>
-								<tbody>
-									<tr>
-										<td>Min (-ve nature, 0 IVs)</td>
-										<td>5</td>
-									</tr>
-									<tr>
-										<td>Default</td>
-										<td>8</td>
-									</tr>
-									<tr>
-										<td>Max Neutral</td>
-										<td>11</td>
-									</tr>
-									<tr>
-										<td>Max Positive</td>
-										<td>12</td>
-									</tr>
-									<tr>
-										<td>Max Neutral (+1)</td>
-										<td>16</td>
-									</tr>
-									<tr>
-										<td>Max Positive (+1)</td>
-										<td>18</td>
-									</tr>
-									<tr>
-										<td>Max Neutral (+2)</td>
-										<td>22</td>
-									</tr>
-									<tr>
-										<td>Max Positive (+2)</td>
-										<td>24</td>
-									</tr>
-									<tr>
-										<td colspan="2" class="PokemonStats-speed-popup-format">Little Cup</td>
-									</tr>
-									<tr>
-										<td>Water Absorb</td>
-										<td>7</td>
-									</tr>
-								</tbody>
-							</table>
-						</div>
-					</td>
-				</tr>
-			</tbody>
-		</table>
-	</div>
-</div>`;
 
 		// let pokemon_name = 'pidgeot';
 		// let version = 'ss';
@@ -191,8 +21,8 @@ export default class MyPlugin extends Plugin {
 		// 	this.writeFile(dummy_fullPath, body);
 		// });
 
-		MyPlugin.JsonPokemonDownload('ss')
-
+		// MyPlugin.JsonPokemonDownload('ss')
+		
 		const Generations = [
 			'GS',
 			'RS',
@@ -203,7 +33,29 @@ export default class MyPlugin extends Plugin {
 			'SS'
 		];
 
+		const type_array = [
+			"Bug",
+			"Dark",
+			"Dragon",
+			"Electric",
+			"Fairy",
+			"Fighting",
+			"Fire",
+			"Flying",
+			"Ghost",
+			"Grass",
+			"Ground",
+			"Ice",
+			"Normal",
+			"Poison",
+			"Psychic",
+			"Rock",
+			"Steel",
+			"Water"
+		];
+
 		let Data = require('data.json');
+		let Types_resistance = require('types.json');
 		
 		this.registerMarkdownPostProcessor(
 			async (el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
@@ -226,7 +78,6 @@ export default class MyPlugin extends Plugin {
 
 					let first_line_copy = first_line.replace("pokemon", "");
 
-
 					let Gen;
 					let Gen_number;
 					for (let i = 0; i < Generations.length; i++) {
@@ -239,6 +90,7 @@ export default class MyPlugin extends Plugin {
 					}
 
 					if(Gen_number === undefined || !Gen) {
+						new Notice("Pokemon Gen not found");
 						console.error("Insert a valid pokemon Gen");
 						return;
 					}
@@ -250,6 +102,7 @@ export default class MyPlugin extends Plugin {
 					const pokemon = Data[Gen_number][pokemon_name];
 
 					if(!pokemon) {
+						new Notice(`Pokemon: ${pokemon_name} not found`);
 						console.error("Invalid Pokemon");
 						return;
 					}
@@ -258,172 +111,203 @@ export default class MyPlugin extends Plugin {
 
 					let PokemonSummary_types = '';
 					for(let type of pokemon.types){
-						PokemonSummary_types += `<li><a class="Type ${type.toLowerCase()}">${type}</a></li>`
+						PokemonSummary_types += `<li><a class="Type ${type.toLowerCase()}">${type}</a></li>`;
+					}
+					
+					let Resists = '';
+					let Immune_to = '';
+					let Very_weak = '';
+
+					for(let types of type_array){
+						let val = 1;
+						let value = 1;
+						for(let type of pokemon.types){
+							val = Types_resistance[type][types] as number;
+						}
+						value *= val;
+
+						if (value === 1){
+							// resist
+							Resists += `<li><a class="Type ${types.toLowerCase()}">${types}</a></li>`;
+						} else if (value < 1){
+							// immune
+							Immune_to += `<li><a class="Type ${types.toLowerCase()}">${types}</a></li>`;
+						} else if (value > 1){
+							// very weak
+							Very_weak += `<li><a class="Type ${types.toLowerCase()}">${types}</a></li>`;
+						}
 					}
 
-					let Immune_to = '';
 
 					// TODO find the immune, resist, very weak in data.json
 
-// 					let PokemonAlt: HTMLElement = MyPlugin.ConvertStringToHTML(`
-// <div class="PokemonAltInfo">
-// <div class="PokemonAltInfo-sprite">
-// 	<div style="background-image:url(https://www.smogon.com/dex/media/sprites/${Gen.toLowerCase()}/${pokemon_name.toLowerCase()}.gif);"></div>
-// </div>
-// <div class="PokemonAltInfo-data">
-// 	<table class="PokemonSummary">
-// 		<tbody>
-// 			<tr>
-// 				<th><span class="PokemonSummary-type">Type</span></th>
-// 				<td>
-// 					<div class="PokemonSummary-types">
-// 						<ul class="TypeList">
-// 							${PokemonSummary_types}
-// 						</ul>
-// 					</div>
-// 					<div class="PokemonSummary-typeEffectivesPopup ">
-// 						<dl class="TypeEffectives">
-// 							<dt>Immune to:</dt>
-// 							<dd>
-// 								<ul class="TypeList">
-// 									${}
-// 								</ul>
-// 							</dd>
-// 							<dt>Resists:</dt>
-// 							<dd>
-// 								<ul class="TypeList">
-// 									${}
-// 								</ul>
-// 							</dd>
-// 							<dt>Very weak to:</dt>
-// 							<dd>
-// 								<ul class="TypeList">
-// 									${}
-// 								</ul>
-// 							</dd>
-// 						</dl>
-// 					</div>
-// 				</td>
-// 			</tr>
-// 			<tr>
-// 				<th>Abilities</th>
-// 				<td>
-// 					<ul class="AbilityList">
-// 						${}
-// 					</ul>
-// 				</td>
-// 			</tr>
-// 			<tr>
-// 				<th>Tier</th>
-// 				<td>
-// 					<ul class="FormatList">
-// 						${}
-// 					</ul>
-// 				</td>
-// 			</tr>
-// 		</tbody>
-// 	</table>
-// </div>
-// <div class="PokemonAltInfo-stats">
-// 	<table class="PokemonStats">
-// 		<tbody>
-// 			<tr>
-// 				<th>HP:</th>
-// 				<td>${}</td>
-// 				<td>
-// 					<div class="PokemonStats-bar" style="width:${}%;background-color:#ff1800;"></div>
-// 				</td>
-// 			</tr>
-// 			<tr>
-// 				<th>Attack:</th>
-// 				<td>${}</td>
-// 				<td>
-// 					<div class="PokemonStats-bar" style="width:${}%;background-color:#ff0000;"></div>
-// 				</td>
-// 			</tr>
-// 			<tr>
-// 				<th>Defense:</th>
-// 				<td>${}</td>
-// 				<td>
-// 					<div class="PokemonStats-bar" style="width:${}%;background-color:#ff0000;"></div>
-// 				</td>
-// 			</tr>
-// 			<tr>
-// 				<th>Sp. Atk:</th>
-// 				<td>${}</td>
-// 				<td>
-// 					<div class="PokemonStats-bar" style="width:${}%;background-color:#ff0000;"></div>
-// 				</td>
-// 			</tr>
-// 			<tr>
-// 				<th>Sp. Def:</th>
-// 				<td>${}</td>
-// 				<td>
-// 					<div class="PokemonStats-bar" style="width:${}%;background-color:#ff0000;"></div>
-// 				</td>
-// 			</tr>
-// 			<tr class="PokemonStats-speed">
-// 				<th><span class="PokemonStats-speed-title">Speed</span><span>:</span></th>
-// 				<td>${}</td>
-// 				<td class="PokemonStats-speed-cell">
-// 					<div class="PokemonStats-bar" style="width:7.5%;background-color:#ff0000;"></div>
-// 					<div class="PokemonStats-speed-popup">
-// 						<table>
-// 							<tbody>
-// 								<tr>
-// 									<td>Min (-ve nature, 0 IVs)</td>
-// 									<td>5</td>
-// 								</tr>
-// 								<tr>
-// 									<td>Default</td>
-// 									<td>8</td>
-// 								</tr>
-// 								<tr>
-// 									<td>Max Neutral</td>
-// 									<td>11</td>
-// 								</tr>
-// 								<tr>
-// 									<td>Max Positive</td>
-// 									<td>12</td>
-// 								</tr>
-// 								<tr>
-// 									<td>Max Neutral (+1)</td>
-// 									<td>16</td>
-// 								</tr>
-// 								<tr>
-// 									<td>Max Positive (+1)</td>
-// 									<td>18</td>
-// 								</tr>
-// 								<tr>
-// 									<td>Max Neutral (+2)</td>
-// 									<td>22</td>
-// 								</tr>
-// 								<tr>
-// 									<td>Max Positive (+2)</td>
-// 									<td>24</td>
-// 								</tr>
-// 								<tr>
-// 									<td colspan="2" class="PokemonStats-speed-popup-format">Little Cup</td>
-// 								</tr>
-// 								<tr>
-// 									<td>Water Absorb</td>
-// 									<td>7</td>
-// 								</tr>
-// 							</tbody>
-// 						</table>
-// 					</div>
-// 				</td>
-// 			</tr>
-// 		</tbody>
-// 	</table>
-// </div>
-// </div>`);
+
+					let formats = '';
+					for(let format of pokemon.formats){
+						formats += `<li><a>${format}</a></li>`;
+					}
+
+
+					let PokemonAlt: HTMLElement = el;
+					PokemonAlt.innerHTML  = `
+<div class="PokemonAltInfo">
+<div class="PokemonAltInfo-sprite">
+	<div style="background-image:url(https://www.smogon.com/dex/media/sprites/${Gen.toLowerCase() === 'gs' ? 'c' : Gen.toLowerCase()}/${pokemon_name.toLowerCase()}.gif);"></div>
+</div>
+<div class="PokemonAltInfo-data">
+	<table class="PokemonSummary">
+		<tbody>
+			<tr>
+				<th><span class="PokemonSummary-type">Type</span></th>
+				<td>
+					<div class="PokemonSummary-types">
+						<ul class="TypeList">
+							${PokemonSummary_types}
+						</ul>
+					</div>
+					<div class="PokemonSummary-typeEffectivesPopup ">
+						<dl class="TypeEffectives">
+							<dt>Immune to:</dt>
+							<dd>
+								<ul class="TypeList">
+									${Immune_to}
+								</ul>
+							</dd>
+							<dt>Resists:</dt>
+							<dd>
+								<ul class="TypeList">
+									${Resists}
+								</ul>
+							</dd>
+							<dt>Very weak to:</dt>
+							<dd>
+								<ul class="TypeList">
+									${Very_weak}
+								</ul>
+							</dd>
+						</dl>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<th>Abilities</th>
+				<td>
+					<ul class="AbilityList">
+						${''}
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<th>Tier</th>
+				<td>
+					<ul class="FormatList">
+						${formats}
+					</ul>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+<div class="PokemonAltInfo-stats">
+	<table class="PokemonStats">
+		<tbody>
+			<tr>
+				<th>HP:</th>
+				<td>${pokemon.hp}</td>
+				<td>
+					<div class="PokemonStats-bar" style="width:${pokemon.hp as number/2}%;background-color:#ff1800;"></div>
+				</td>
+			</tr>
+			<tr>
+				<th>Attack:</th>
+				<td>${pokemon.atk}</td>
+				<td>
+					<div class="PokemonStats-bar" style="width:${pokemon.atk as number/2}%;background-color:#ff0000;"></div>
+				</td>
+			</tr>
+			<tr>
+				<th>Defense:</th>
+				<td>${pokemon.def}</td>
+				<td>
+					<div class="PokemonStats-bar" style="width:${pokemon.def as number/2}%;background-color:#ff0000;"></div>
+				</td>
+			</tr>
+			<tr>
+				<th>Sp. Atk:</th>
+				<td>${pokemon.spa}</td>
+				<td>
+					<div class="PokemonStats-bar" style="width:${pokemon.spa as number/2}%;background-color:#ff0000;"></div>
+				</td>
+			</tr>
+			<tr>
+				<th>Sp. Def:</th>
+				<td>${pokemon.spd}</td>
+				<td>
+					<div class="PokemonStats-bar" style="width:${pokemon.spd as number/2}%;background-color:#ff0000;"></div>
+				</td>
+			</tr>
+			<tr class="PokemonStats-speed">
+				<th><span class="PokemonStats-speed-title">Speed</span><span>:</span></th>
+				<td>${pokemon.spe}</td>
+				<td class="PokemonStats-speed-cell">
+					<div class="PokemonStats-bar" style="width:7.5%;background-color:#ff0000;"></div>
+					<div class="PokemonStats-speed-popup">
+						<table>
+							<tbody>
+								<tr>
+									<td>Min (-ve nature, 0 IVs)</td>
+									<td>5</td>
+								</tr>
+								<tr>
+									<td>Default</td>
+									<td>8</td>
+								</tr>
+								<tr>
+									<td>Max Neutral</td>
+									<td>11</td>
+								</tr>
+								<tr>
+									<td>Max Positive</td>
+									<td>12</td>
+								</tr>
+								<tr>
+									<td>Max Neutral (+1)</td>
+									<td>16</td>
+								</tr>
+								<tr>
+									<td>Max Positive (+1)</td>
+									<td>18</td>
+								</tr>
+								<tr>
+									<td>Max Neutral (+2)</td>
+									<td>22</td>
+								</tr>
+								<tr>
+									<td>Max Positive (+2)</td>
+									<td>24</td>
+								</tr>
+								<tr>
+									<td colspan="2" class="PokemonStats-speed-popup-format">Little Cup</td>
+								</tr>
+								<tr>
+									<td>Water Absorb</td>
+									<td>7</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+</div>`;
 
 					// el.appendChild(PokemonAlt);
-					el.addClass("pokemon-container");
+					// el.addClass("pokemon-container");
 					
-					let d: HTMLElement = el;
-					d.innerHTML = test;
+					// let d: HTMLElement = el;
+					// d.innerHTML = test;
 				}
 				
 				// document.addEventListener("DOMContentLoaded", function() { 
@@ -468,12 +352,6 @@ export default class MyPlugin extends Plugin {
 	// 	} catch (err) { return console.log(err) }
 	// }
 
-	static ConvertStringToHTML(str: string): HTMLElement{
-		let parser = new DOMParser();
-		let doc = parser.parseFromString(str, 'text/html');
-		return doc.body;
-	};
-
 	static JsonPokemonDownload(version: string): void {
 		const request = require('request');
 		
@@ -499,6 +377,74 @@ export default class MyPlugin extends Plugin {
 			console.log('pokemon list:', pokemon_list_fixed);
 			console.log('pokemon list json:', JSON.stringify(pokemon_list_fixed));
 		});
+
+	}
+	
+	static stringToHTML (str: string): HTMLElement {
+		var parser = new DOMParser();
+		var doc = parser.parseFromString(str, 'text/html');
+		return doc.body;
+	};
+	static Table(str: string): any {
+
+		let type_array = [
+			"Bug",
+			"Dark",
+			"Dragon",
+			"Electric",
+			"Fairy",
+			"Fighting",
+			"Fire",
+			"Flying",
+			"Ghost",
+			"Grass",
+			"Ground",
+			"Ice",
+			"Normal",
+			"Poison",
+			"Psychic",
+			"Rock",
+			"Steel",
+			"Water"
+		]
+
+		const lines = this.stringToHTML(str);
+		let Obj: any = {};
+
+		console.log(lines);
+
+		let divs = lines.getElementsByTagName('div');
+
+		for(let i = 0, k = 0, j = 0; i < divs.length; i++, k++) {
+			if(!Obj[type_array[k]])
+				Obj[type_array[k]] = {};
+
+			let val;
+			switch(divs[i].textContent) {
+				case 'x1':
+					val = 1;
+					break;
+				case 'x2':
+					val = 2;
+					break;
+				case 'x0':
+					val = 0;
+					break;
+				case 'x½':
+					val = .5;
+			}
+
+			Obj[type_array[k]][type_array[j]] = val;
+
+			if(k === type_array.length -1){
+				k = -1;
+				j++;
+			}
+		}
+
+		console.log(Obj);
+
+		console.log(JSON.stringify(Obj));
 
 	}
 }
