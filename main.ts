@@ -7,22 +7,6 @@ import { table } from 'console';
 export default class MyPlugin extends Plugin {
 
 	async onload() {
-
-		// let pokemon_name = 'pidgeot';
-		// let version = 'ss';
-
-		// const request = require('request');
-
-		// request(`https://www.smogon.com/dex/${version}/pokemon/${pokemon_name}`, function (error: any, response: any, body: any) {
-		// 	console.error('error:', error); // Print the error if one occurred
-		// 	console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
-		// 	console.log('body:', body); // Print the HTML for the Google homepage.
-		// 	this.resetFile(dummycopy html nfde from _fullPath);
-		// 	this.writeFile(dummy_fullPath, body);
-		// });
-
-		// MyPlugin.JsonPokemonDownload('ss')
-		
 		const Generations = [
 			'GS',
 			'RS',
@@ -54,9 +38,10 @@ export default class MyPlugin extends Plugin {
 			"Water"
 		];
 
-		let Data = require('data.json');
-		let Types_resistance = require('types.json');
+		let Poke_data = require('data.json');
+		let Type_list = require('types.json');
 		
+		/* Main Function */
 		this.registerMarkdownPostProcessor(
 			async (el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
 				let codeblocks = el.querySelectorAll("pre");
@@ -99,7 +84,7 @@ export default class MyPlugin extends Plugin {
 
 					console.log("Pokemon: ", "'" + pokemon_name + "'", "Gen: ", Gen);
 
-					const pokemon = Data[Gen_number][pokemon_name];
+					const pokemon = Poke_data[Gen_number][pokemon_name];
 
 					if(!pokemon) {
 						new Notice(`Pokemon: ${pokemon_name} not found`);
@@ -117,34 +102,39 @@ export default class MyPlugin extends Plugin {
 					let Immune_to = '';
 					let Strong_resists = '';
 					let Resists = '';
-					let weak = '';
-					let Very_weak = '';
+					let Weak_to = '';
+					let Very_weak_to = '';
 
 					for(let types of type_array){
 						let val = 1;
 						for(let type of pokemon.types){
-							val *= Types_resistance[type][types] as number;
+							val *= Type_list[type][types] as number;
 						}
 
 						if (val === 0){
-							// resist
+
 							Immune_to += `<li><a class="Type ${types.toLowerCase()}">${types}</a></li>`;
 						} else if (val === .25){
 							Strong_resists += `<li><a class="Type ${types.toLowerCase()}">${types}</a></li>`;
-							// immune
+
 						} else if (val === .5){
-							// very weak
+
 							Resists += `<li><a class="Type ${types.toLowerCase()}">${types}</a></li>`;
 						} else if (val === 2){
-							weak += `<li><a class="Type ${types.toLowerCase()}">${types}</a></li>`;
-						} else { // 4
-							Very_weak += `<li><a class="Type ${types.toLowerCase()}">${types}</a></li>`;
+
+							Weak_to += `<li><a class="Type ${types.toLowerCase()}">${types}</a></li>`;
+						} else if (val === 4) {
+
+							Very_weak_to += `<li><a class="Type ${types.toLowerCase()}">${types}</a></li>`;
 						}
 					}
 
-
-					// TODO find the immune, resist, very weak in data.json
-
+					const type_summary =
+					(Immune_to ? `<dt>Immune to:</dt><dd><ul class="TypeList">${Immune_to}</ul></dd>` : '') +
+					(Strong_resists ? `<dt>Strongly Resists:</dt><dd><ul class="TypeList">${Strong_resists}</ul></dd>` : '') +
+					(Resists ? `<dt>Resists:</dt><dd><ul class="TypeList">${Resists}</ul></dd>` : '') +
+					(Weak_to ? `<dt>Weak to:</dt><dd><ul class="TypeList">${Weak_to}</ul></dd>` : '') +
+					(Very_weak_to ? `<dt>Very Weak to:</dt><dd><ul class="TypeList">${Very_weak_to}</ul></dd>` : '');
 
 					let formats = '';
 					for(let format of pokemon.formats){
@@ -172,24 +162,7 @@ export default class MyPlugin extends Plugin {
 					</div>
 					<div class="PokemonSummary-typeEffectivesPopup ">
 						<dl class="TypeEffectives">
-							<dt>Immune to:</dt>
-							<dd>
-								<ul class="TypeList">
-									${Immune_to}
-								</ul>
-							</dd>
-							<dt>Resists:</dt>
-							<dd>
-								<ul class="TypeList">
-									${Resists}
-								</ul>
-							</dd>
-							<dt>Very weak to:</dt>
-							<dd>
-								<ul class="TypeList">
-									${Very_weak}
-								</ul>
-							</dd>
+							${type_summary}
 						</dl>
 					</div>
 				</td>
@@ -307,22 +280,11 @@ export default class MyPlugin extends Plugin {
 	</table>
 </div>
 </div>`;
-
-					// el.appendChild(PokemonAlt);
-					// el.addClass("pokemon-container");
-					
-					// let d: HTMLElement = el;
-					// d.innerHTML = test;
 				}
 				
-				// document.addEventListener("DOMContentLoaded", function() { 
-				// 	let parent = el.querySelector('.pokemon-container');
-				// 	console.log(parent);
-				// });
+
 				
 				let parent = el.querySelector('table[class = PokemonSummary] > tbody > tr');
-				// let parent = el.querySelector('.pokemon-container');
-				console.log(parent);
 				let type_effectives_popup = el.getElementsByClassName('PokemonSummary-typeEffectivesPopup');
 				
 				if (parent) {
@@ -340,22 +302,6 @@ export default class MyPlugin extends Plugin {
 	onunload() {
 
 	}
-
-	// async writeFile(outputDir: string, data: any) {
-	// 	try {
-	// 		await fsPromises.writeFile(outputDir, data, { flag: 'a+' });
-
-	// 		return;
-	// 	} catch (err) { return console.log(err) }
-	// }
-
-	// async resetFile(outputDir: string) {
-	// 	try {
-	// 		await fsPromises.truncate(outputDir, 0);
-
-	// 		return;
-	// 	} catch (err) { return console.log(err) }
-	// }
 
 	static JsonPokemonDownload(version: string): void {
 		const request = require('request');
@@ -390,6 +336,7 @@ export default class MyPlugin extends Plugin {
 		var doc = parser.parseFromString(str, 'text/html');
 		return doc.body;
 	};
+
 	static Table(str: string): any {
 
 		let type_array = [
