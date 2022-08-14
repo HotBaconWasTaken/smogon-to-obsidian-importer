@@ -114,26 +114,30 @@ export default class MyPlugin extends Plugin {
 						PokemonSummary_types += `<li><a class="Type ${type.toLowerCase()}">${type}</a></li>`;
 					}
 					
-					let Resists = '';
 					let Immune_to = '';
+					let Strong_resists = '';
+					let Resists = '';
+					let weak = '';
 					let Very_weak = '';
 
 					for(let types of type_array){
 						let val = 1;
-						let value = 1;
 						for(let type of pokemon.types){
-							val = Types_resistance[type][types] as number;
+							val *= Types_resistance[type][types] as number;
 						}
-						value *= val;
 
-						if (value === 1){
+						if (val === 0){
 							// resist
-							Resists += `<li><a class="Type ${types.toLowerCase()}">${types}</a></li>`;
-						} else if (value < 1){
-							// immune
 							Immune_to += `<li><a class="Type ${types.toLowerCase()}">${types}</a></li>`;
-						} else if (value > 1){
+						} else if (val === .25){
+							Strong_resists += `<li><a class="Type ${types.toLowerCase()}">${types}</a></li>`;
+							// immune
+						} else if (val === .5){
 							// very weak
+							Resists += `<li><a class="Type ${types.toLowerCase()}">${types}</a></li>`;
+						} else if (val === 2){
+							weak += `<li><a class="Type ${types.toLowerCase()}">${types}</a></li>`;
+						} else { // 4
 							Very_weak += `<li><a class="Type ${types.toLowerCase()}">${types}</a></li>`;
 						}
 					}
@@ -149,10 +153,11 @@ export default class MyPlugin extends Plugin {
 
 
 					let PokemonAlt: HTMLElement = el;
+					PokemonAlt.addClass('pokemon-container');
 					PokemonAlt.innerHTML  = `
 <div class="PokemonAltInfo">
 <div class="PokemonAltInfo-sprite">
-	<div style="background-image:url(https://www.smogon.com/dex/media/sprites/${Gen.toLowerCase() === 'gs' ? 'c' : Gen.toLowerCase()}/${pokemon_name.toLowerCase()}.gif);"></div>
+	<div style="background-image:url(https://www.smogon.com/dex/media/sprites/${Gen === 'GS' ? 'c' : Gen === 'SM' || Gen === 'SS' ? 'xy' : Gen.toLowerCase()}/${pokemon_name.toLowerCase()}.gif);"></div>
 </div>
 <div class="PokemonAltInfo-data">
 	<table class="PokemonSummary">
@@ -215,7 +220,7 @@ export default class MyPlugin extends Plugin {
 				<th>HP:</th>
 				<td>${pokemon.hp}</td>
 				<td>
-					<div class="PokemonStats-bar" style="width:${pokemon.hp as number/2}%;background-color:#ff1800;"></div>
+					<div class="PokemonStats-bar" style="width:${pokemon.hp as number/1.5}%;background-color:#ff1800;"></div>
 				</td>
 			</tr>
 			<tr>
@@ -250,7 +255,7 @@ export default class MyPlugin extends Plugin {
 				<th><span class="PokemonStats-speed-title">Speed</span><span>:</span></th>
 				<td>${pokemon.spe}</td>
 				<td class="PokemonStats-speed-cell">
-					<div class="PokemonStats-bar" style="width:7.5%;background-color:#ff0000;"></div>
+					<div class="PokemonStats-bar" style="width:${pokemon.spe as number/2}%;background-color:#ff0000;"></div>
 					<div class="PokemonStats-speed-popup">
 						<table>
 							<tbody>
