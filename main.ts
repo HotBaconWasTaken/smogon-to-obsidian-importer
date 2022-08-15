@@ -3,11 +3,19 @@ import { fstat, readFileSync, writeFileSync, promises as fsPromises } from 'fs';
 import { dirname, join } from 'path';
 import { Request } from 'request';
 import { table } from 'console';
+import { Body } from 'node-fetch';
 
 export default class MyPlugin extends Plugin {
 
+
+	static Poke_data = require('data.json');
+	static Type_list = require('types.json');
+	obj: string = '';
+
 	async onload() {
+		const request = require('request');
 		const Generations = [
+			'RB',
 			'GS',
 			'RS',
 			'DP',
@@ -38,9 +46,9 @@ export default class MyPlugin extends Plugin {
 			"Water"
 		];
 
-		let Poke_data = require('data.json');
-		let Type_list = require('types.json');
-		
+		// MyPlugin.JsonPokemonDownload('xy');
+		// MyPlugin.GetAbility('https://pokeapi.co/api/v2/ability')
+
 		/* Main Function */
 		this.registerMarkdownPostProcessor(
 			async (el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
@@ -56,37 +64,34 @@ export default class MyPlugin extends Plugin {
 					let lines = content.text
 						.split("\n")
 						.slice(content.lineStart, content.lineEnd);
-					let first_line = lines[0];
 
 					// Check block language. ```pokemon name version```
-					if (!first_line.contains("pokemon")) continue;
-
-					let first_line_copy = first_line.replace("pokemon", "");
+					if (!lines[0].contains("pokemon")) continue;
 
 					let Gen;
 					let Gen_number;
 					for (let i = 0; i < Generations.length; i++) {
-						if(first_line_copy.contains(" " + Generations[i])){
+						if (lines[1].contains(" " + Generations[i])) {
 							Gen = Generations[i];
-							first_line_copy = first_line_copy.replace(Generations[i], "");
+							lines[1] = lines[1].replace(Generations[i], "");
 							Gen_number = i;
 							break;
 						}
 					}
 
-					if(Gen_number === undefined || !Gen) {
+					if (Gen_number === undefined || !Gen) {
 						new Notice("Pokemon Gen not found");
 						console.error("Insert a valid pokemon Gen");
 						return;
 					}
 
-					let pokemon_name = first_line_copy.replace("```", "").trim();
+					let pokemon_name = lines[1].replace("```", "").trim();
 
 					console.log("Pokemon: ", "'" + pokemon_name + "'", "Gen: ", Gen);
 
-					const pokemon = Poke_data[Gen_number][pokemon_name];
+					const pokemon = MyPlugin.Poke_data[Gen_number][pokemon_name];
 
-					if(!pokemon) {
+					if (!pokemon) {
 						new Notice(`Pokemon: ${pokemon_name} not found`);
 						console.error("Invalid Pokemon");
 						return;
@@ -95,56 +100,63 @@ export default class MyPlugin extends Plugin {
 					console.log("Pokemon", pokemon);
 
 					let PokemonSummary_types = '';
-					for(let type of pokemon.types){
+					for (let type of pokemon.types) {
 						PokemonSummary_types += `<li><a class="Type ${type.toLowerCase()}">${type}</a></li>`;
 					}
-					
+
 					let Immune_to = '';
 					let Strong_resists = '';
 					let Resists = '';
 					let Weak_to = '';
 					let Very_weak_to = '';
 
-					for(let types of type_array){
+					for (let types of type_array) {
 						let val = 1;
-						for(let type of pokemon.types){
-							val *= Type_list[type][types] as number;
+						for (let type of pokemon.types) {
+							val *= MyPlugin.Type_list[type][types] as number;
 						}
 
-						if (val === 0){
-
+						if (val === 0) {
 							Immune_to += `<li><a class="Type ${types.toLowerCase()}">${types}</a></li>`;
-						} else if (val === .25){
+						} else if (val === .25) {
 							Strong_resists += `<li><a class="Type ${types.toLowerCase()}">${types}</a></li>`;
-
-						} else if (val === .5){
-
+						} else if (val === .5) {
 							Resists += `<li><a class="Type ${types.toLowerCase()}">${types}</a></li>`;
-						} else if (val === 2){
-
+						} else if (val === 2) {
 							Weak_to += `<li><a class="Type ${types.toLowerCase()}">${types}</a></li>`;
 						} else if (val === 4) {
-
 							Very_weak_to += `<li><a class="Type ${types.toLowerCase()}">${types}</a></li>`;
 						}
 					}
 
 					const type_summary =
-					(Immune_to ? `<dt>Immune to:</dt><dd><ul class="TypeList">${Immune_to}</ul></dd>` : '') +
-					(Strong_resists ? `<dt>Strongly Resists:</dt><dd><ul class="TypeList">${Strong_resists}</ul></dd>` : '') +
-					(Resists ? `<dt>Resists:</dt><dd><ul class="TypeList">${Resists}</ul></dd>` : '') +
-					(Weak_to ? `<dt>Weak to:</dt><dd><ul class="TypeList">${Weak_to}</ul></dd>` : '') +
-					(Very_weak_to ? `<dt>Very Weak to:</dt><dd><ul class="TypeList">${Very_weak_to}</ul></dd>` : '');
+						(Immune_to ? `<dt>Immune to:</dt><dd><ul class="TypeList">${Immune_to}</ul></dd>` : '') +
+						(Strong_resists ? `<dt>Strongly Resists:</dt><dd><ul class="TypeList">${Strong_resists}</ul></dd>` : '') +
+						(Resists ? `<dt>Resists:</dt><dd><ul class="TypeList">${Resists}</ul></dd>` : '') +
+						(Weak_to ? `<dt>Weak to:</dt><dd><ul class="TypeList">${Weak_to}</ul></dd>` : '') +
+						(Very_weak_to ? `<dt>Very Weak to:</dt><dd><ul class="TypeList">${Very_weak_to}</ul></dd>` : '');
 
 					let formats = '';
-					for(let format of pokemon.formats){
+					for (let format of pokemon.formats) {
 						formats += `<li><a>${format}</a></li>`;
 					}
 
+					let Ability_list = '';
+					for (let i = 0; i < pokemon.abilities.length; i++) {
+						if (pokemon.abilities[i] === true || pokemon.abilities[i] === false) continue;
+						const is_hidden = pokemon.abilities[i + 1] === true ? '<is-hidden style="background-color: #692c9c; border-radius: 5px; margin-left: 7px; padding: 2px; font-size: 12px; color:white; font-weight: bold;">Hidden</is-hidden>' : '';
 
+						Ability_list +=
+						`<li><a class="AbilityLink"><span>${pokemon.abilities[i]}</span> 
+						<div class="AbilityPreview">
+						${'...'}
+						</div>
+						</a>${is_hidden}</li>`;
+					}
+					
 					let PokemonAlt: HTMLElement = el;
 					PokemonAlt.addClass('pokemon-container');
-					PokemonAlt.innerHTML  = `
+					PokemonAlt.innerHTML = `
 <div class="PokemonAltInfo">
 <div class="PokemonAltInfo-sprite">
 	<div style="background-image:url(https://www.smogon.com/dex/media/sprites/${Gen === 'GS' ? 'c' : Gen === 'SM' || Gen === 'SS' ? 'xy' : Gen.toLowerCase()}/${pokemon_name.toLowerCase()}.gif);"></div>
@@ -171,7 +183,7 @@ export default class MyPlugin extends Plugin {
 				<th>Abilities</th>
 				<td>
 					<ul class="AbilityList">
-						${''}
+						${Ability_list}
 					</ul>
 				</td>
 			</tr>
@@ -193,42 +205,42 @@ export default class MyPlugin extends Plugin {
 				<th>HP:</th>
 				<td>${pokemon.hp}</td>
 				<td>
-					<div class="PokemonStats-bar" style="width:${pokemon.hp as number/1.5}%;background-color:#ff1800;"></div>
+					<div class="PokemonStats-bar" style="width:${pokemon.hp as number / 1.5}%;background-color:#ff1800;"></div>
 				</td>
 			</tr>
 			<tr>
 				<th>Attack:</th>
 				<td>${pokemon.atk}</td>
 				<td>
-					<div class="PokemonStats-bar" style="width:${pokemon.atk as number/2}%;background-color:#ff0000;"></div>
+					<div class="PokemonStats-bar" style="width:${pokemon.atk as number / 2}%;background-color:#ff0000;"></div>
 				</td>
 			</tr>
 			<tr>
 				<th>Defense:</th>
 				<td>${pokemon.def}</td>
 				<td>
-					<div class="PokemonStats-bar" style="width:${pokemon.def as number/2}%;background-color:#ff0000;"></div>
+					<div class="PokemonStats-bar" style="width:${pokemon.def as number / 2}%;background-color:#ff0000;"></div>
 				</td>
 			</tr>
 			<tr>
 				<th>Sp. Atk:</th>
 				<td>${pokemon.spa}</td>
 				<td>
-					<div class="PokemonStats-bar" style="width:${pokemon.spa as number/2}%;background-color:#ff0000;"></div>
+					<div class="PokemonStats-bar" style="width:${pokemon.spa as number / 2}%;background-color:#ff0000;"></div>
 				</td>
 			</tr>
 			<tr>
 				<th>Sp. Def:</th>
 				<td>${pokemon.spd}</td>
 				<td>
-					<div class="PokemonStats-bar" style="width:${pokemon.spd as number/2}%;background-color:#ff0000;"></div>
+					<div class="PokemonStats-bar" style="width:${pokemon.spd as number / 2}%;background-color:#ff0000;"></div>
 				</td>
 			</tr>
 			<tr class="PokemonStats-speed">
 				<th><span class="PokemonStats-speed-title">Speed</span><span>:</span></th>
 				<td>${pokemon.spe}</td>
 				<td class="PokemonStats-speed-cell">
-					<div class="PokemonStats-bar" style="width:${pokemon.spe as number/2}%;background-color:#ff0000;"></div>
+					<div class="PokemonStats-bar" style="width:${pokemon.spe as number / 2}%;background-color:#ff0000;"></div>
 					<div class="PokemonStats-speed-popup">
 						<table>
 							<tbody>
@@ -281,19 +293,15 @@ export default class MyPlugin extends Plugin {
 </div>
 </div>`;
 				}
-				
 
-				
 				let parent = el.querySelector('table[class = PokemonSummary] > tbody > tr');
 				let type_effectives_popup = el.getElementsByClassName('PokemonSummary-typeEffectivesPopup');
-				
-				if (parent) {
-					parent.addEventListener('mouseover', function() 
-					{ type_effectives_popup[0].className += ' PokemonSummary-typeEffectivesPopup-isDisplayed' })
 
-					parent.addEventListener('mouseout', function() 
-					{ type_effectives_popup[0].className = 'PokemonSummary-typeEffectivesPopup' })
-				} 
+				if (parent) {
+					parent.addEventListener('mouseover', () => { type_effectives_popup[0].className += ' PokemonSummary-typeEffectivesPopup-isDisplayed' })
+
+					parent.addEventListener('mouseout', () => { type_effectives_popup[0].className = 'PokemonSummary-typeEffectivesPopup' })
+				}
 			},
 			100
 		);
@@ -305,9 +313,9 @@ export default class MyPlugin extends Plugin {
 
 	static JsonPokemonDownload(version: string): void {
 		const request = require('request');
-		
+
 		request(`https://www.smogon.com/dex/${version}/pokemon`, (error: any, response: any, body: any) => {
-			if(error) return;
+			if (error) return;
 			// console.error('error:', error); // Print the error if one occurred
 			// console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
 			const response_document = new DOMParser().parseFromString(body, "text/html");
@@ -316,12 +324,13 @@ export default class MyPlugin extends Plugin {
 			// this.writeFile(dummy_fullPath, body);
 
 			const F = new Function('let ' + (response_document.getElementsByTagName('script')[1]).text + '\nreturn dexSettings;');
+			console.log(F().injectRpcs[1][1].abilities);
 
 			const pokemon_list = F().injectRpcs[1][1].pokemon;
 			let pokemon_list_fixed: any = {};
 
-			for(let i = 0; i < pokemon_list.length; i++) {
-				pokemon_list_fixed[pokemon_list[i].name] = {...pokemon_list[i]}
+			for (let i = 0; i < pokemon_list.length; i++) {
+				pokemon_list_fixed[pokemon_list[i].name] = { ...pokemon_list[i] }
 				delete pokemon_list_fixed[pokemon_list[i].name].name;
 			}
 
@@ -330,8 +339,8 @@ export default class MyPlugin extends Plugin {
 		});
 
 	}
-	
-	static stringToHTML (str: string): HTMLElement {
+
+	static stringToHTML(str: string): HTMLElement {
 		var parser = new DOMParser();
 		var doc = parser.parseFromString(str, 'text/html');
 		return doc.body;
@@ -367,12 +376,12 @@ export default class MyPlugin extends Plugin {
 
 		let divs = lines.getElementsByTagName('div');
 
-		for(let i = 0, k = 0, j = 0; i < divs.length; i++, k++) {
-			if(!Obj[type_array[k]])
+		for (let i = 0, k = 0, j = 0; i < divs.length; i++, k++) {
+			if (!Obj[type_array[k]])
 				Obj[type_array[k]] = {};
 
 			let val;
-			switch(divs[i].textContent) {
+			switch (divs[i].textContent) {
 				case 'x1':
 					val = 1;
 					break;
@@ -388,7 +397,7 @@ export default class MyPlugin extends Plugin {
 
 			Obj[type_array[k]][type_array[j]] = val;
 
-			if(k === type_array.length -1){
+			if (k === type_array.length - 1) {
 				k = -1;
 				j++;
 			}
@@ -399,4 +408,63 @@ export default class MyPlugin extends Plugin {
 		console.log(JSON.stringify(Obj));
 
 	}
+
+
+	static GetAbility(str: string) {
+		const request = require('request');
+
+		request(str, (error: any, response: any, body: any) => {
+			if (error) return;
+
+			const json = JSON.parse(body);
+			console.log(json.next);
+
+			if (json.next) {
+				this.GetAbility(json.next);
+			}
+
+			for (let ab of json.results) {
+				request(ab.url, (error: any, response: any, body: any) => {
+					// console.table(JSON.parse(body));
+					let pokemons = JSON.parse(body).pokemon;
+
+					for (let j = 0; j < MyPlugin.Poke_data.length; j++) {
+						for (let pokemon of pokemons) {
+							let name = pokemon.pokemon.name.charAt(0).toUpperCase() + pokemon.pokemon.name.slice(1);
+							if (name.contains('-')) {
+								let arr = [...name];
+								for (let i = 0; i < arr.length; i++) {
+									if (arr[i] === '-') {
+										arr[i + 1] = arr[i + 1].toUpperCase();
+										break;
+									}
+								}
+								name = arr.join('');
+								console.log(name, arr);
+							}
+							if (MyPlugin.Poke_data[j][name]) {
+								for (let i = 0; i < MyPlugin.Poke_data[j][name].abilities.length; i++) {
+									if (MyPlugin.Poke_data[j][name].abilities[i].toString().toLowerCase().replace(/\s/g, '-') === ab.name) {
+										MyPlugin.Poke_data[j][name].abilities.splice(i + 1, 0, pokemon.is_hidden);
+									}
+								}
+							}
+						}
+					}
+
+				});
+			}
+
+			if (!json.next)
+				console.log(JSON.stringify(MyPlugin.Poke_data));
+		});
+	}
+
+	// static GetAbility2() {
+	// 	//https://pokeapi.co/api/v2/pokemon/nidoran-f
+
+	// 	for(let j = 0; j < MyPlugin.Poke_data.length; j++) {
+
+	// 	}
+	// }
 }
