@@ -149,17 +149,17 @@ export default class MyPlugin extends Plugin {
 						Ability_list +=
 						`<li><a class="AbilityLink"><span>${pokemon.abilities[i]}</span> 
 						<div class="AbilityPreview">
-						${'...'}
+						...
 						</div>
 						</a>${is_hidden}</li>`;
 					}
-					
+
 					let PokemonAlt: HTMLElement = el;
 					PokemonAlt.addClass('pokemon-container');
 					PokemonAlt.innerHTML = `
 <div class="PokemonAltInfo">
 <div class="PokemonAltInfo-sprite">
-	<div style="background-image:url(https://www.smogon.com/dex/media/sprites/${Gen === 'GS' ? 'c' : Gen === 'SM' || Gen === 'SS' ? 'xy' : Gen.toLowerCase()}/${pokemon_name.toLowerCase()}.gif);"></div>
+	<div style="background-image:url(https://www.smogon.com/dex/media/sprites/${Gen === 'GS' ? 'c' : Gen === 'SM' || Gen === 'SS' ? 'xy' : Gen.toLowerCase()}/${pokemon_name.toLowerCase()}.${Gen_number < 4 && Gen != 'GS' ? 'png' : 'gif'});"></div>
 </div>
 <div class="PokemonAltInfo-data">
 	<table class="PokemonSummary">
@@ -292,6 +292,8 @@ export default class MyPlugin extends Plugin {
 	</table>
 </div>
 </div>`;
+					if(Ability_list)
+						MyPlugin.loadAbStats(el.querySelectorAll('.AbilityPreview'), el, pokemon, 0, 0);
 				}
 
 				let parent = el.querySelector('table[class = PokemonSummary] > tbody > tr');
@@ -299,7 +301,6 @@ export default class MyPlugin extends Plugin {
 
 				if (parent) {
 					parent.addEventListener('mouseover', () => { type_effectives_popup[0].className += ' PokemonSummary-typeEffectivesPopup-isDisplayed' })
-
 					parent.addEventListener('mouseout', () => { type_effectives_popup[0].className = 'PokemonSummary-typeEffectivesPopup' })
 				}
 			},
@@ -309,6 +310,20 @@ export default class MyPlugin extends Plugin {
 
 	onunload() {
 
+	}
+
+	static async loadAbStats(AbilityPreview: any, el: HTMLElement, pokemon: any, i: number, j: number){
+		if(j === AbilityPreview.length) return;
+		if (pokemon.abilities[i] === true || pokemon.abilities[i] === false){
+			this.loadAbStats(AbilityPreview, el, pokemon, ++i, j);
+			return;
+		}
+		fetch(`https://pokeapi.co/api/v2/ability/${pokemon.abilities[i]?.toString().toLowerCase().replace(/\s/g, '-')}/`)
+			.then((response) => response.json())
+			.then((data) => {
+				AbilityPreview[j].textContent = data.effect_entries[1].effect;
+				this.loadAbStats(AbilityPreview, el, pokemon, ++i, ++j);
+			}).catch(error => console.error(error));
 	}
 
 	static JsonPokemonDownload(version: string): void {
