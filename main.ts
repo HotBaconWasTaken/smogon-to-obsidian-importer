@@ -113,7 +113,7 @@ export default class MyPlugin extends Plugin {
 					for (let types of type_array) {
 						let val = 1;
 						for (let type of pokemon.types) {
-							val *= MyPlugin.Type_list[type][types] as number;
+							val *= MyPlugin.Type_list[type][types];
 						}
 
 						if (val === 0) {
@@ -205,42 +205,42 @@ export default class MyPlugin extends Plugin {
 				<th>HP:</th>
 				<td>${pokemon.hp}</td>
 				<td>
-					<div class="PokemonStats-bar" style="width:${pokemon.hp as number / 1.5}%;background-color:#ff1800;"></div>
+					<div class="PokemonStats-bar" style="width:${pokemon.hp / 2}%;background-color:#ff1800;"></div>
 				</td>
 			</tr>
 			<tr>
 				<th>Attack:</th>
 				<td>${pokemon.atk}</td>
 				<td>
-					<div class="PokemonStats-bar" style="width:${pokemon.atk as number / 2}%;background-color:#ff0000;"></div>
+					<div class="PokemonStats-bar" style="width:${pokemon.atk / 2}%;background-color:#ff0000;"></div>
 				</td>
 			</tr>
 			<tr>
 				<th>Defense:</th>
 				<td>${pokemon.def}</td>
 				<td>
-					<div class="PokemonStats-bar" style="width:${pokemon.def as number / 2}%;background-color:#ff0000;"></div>
+					<div class="PokemonStats-bar" style="width:${pokemon.def / 2}%;background-color:#ff0000;"></div>
 				</td>
 			</tr>
 			<tr>
 				<th>Sp. Atk:</th>
 				<td>${pokemon.spa}</td>
 				<td>
-					<div class="PokemonStats-bar" style="width:${pokemon.spa as number / 2}%;background-color:#ff0000;"></div>
+					<div class="PokemonStats-bar" style="width:${pokemon.spa / 2}%;background-color:#ff0000;"></div>
 				</td>
 			</tr>
 			<tr>
 				<th>Sp. Def:</th>
 				<td>${pokemon.spd}</td>
 				<td>
-					<div class="PokemonStats-bar" style="width:${pokemon.spd as number / 2}%;background-color:#ff0000;"></div>
+					<div class="PokemonStats-bar" style="width:${pokemon.spd / 2}%;background-color:#ff0000;"></div>
 				</td>
 			</tr>
 			<tr class="PokemonStats-speed">
 				<th><span class="PokemonStats-speed-title">Speed</span><span>:</span></th>
 				<td>${pokemon.spe}</td>
 				<td class="PokemonStats-speed-cell">
-					<div class="PokemonStats-bar" style="width:${pokemon.spe as number / 2}%;background-color:#ff0000;"></div>
+					<div class="PokemonStats-bar" style="width:${pokemon.spe / 2}%;background-color:#ff0000;"></div>
 					<div class="PokemonStats-speed-popup">
 						<table>
 							<tbody>
