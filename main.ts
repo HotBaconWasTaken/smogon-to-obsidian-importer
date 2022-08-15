@@ -6,14 +6,11 @@ import { table } from 'console';
 import { Body } from 'node-fetch';
 
 export default class MyPlugin extends Plugin {
-
-
 	static Poke_data = require('data.json');
 	static Type_list = require('types.json');
 	obj: string = '';
 
 	async onload() {
-		const request = require('request');
 		const Generations = [
 			'RB',
 			'GS',
@@ -309,7 +306,7 @@ export default class MyPlugin extends Plugin {
 	}
 
 	onunload() {
-
+		
 	}
 
 	static async loadAbStats(AbilityPreview: any, el: HTMLElement, pokemon: any, i: number, j: number){
@@ -359,7 +356,7 @@ export default class MyPlugin extends Plugin {
 		var parser = new DOMParser();
 		var doc = parser.parseFromString(str, 'text/html');
 		return doc.body;
-	};
+	}
 
 	static Table(str: string): any {
 
@@ -424,7 +421,6 @@ export default class MyPlugin extends Plugin {
 
 	}
 
-
 	static GetAbility(str: string) {
 		const request = require('request');
 
@@ -474,12 +470,4 @@ export default class MyPlugin extends Plugin {
 				console.log(JSON.stringify(MyPlugin.Poke_data));
 		});
 	}
-
-	// static GetAbility2() {
-	// 	//https://pokeapi.co/api/v2/pokemon/nidoran-f
-
-	// 	for(let j = 0; j < MyPlugin.Poke_data.length; j++) {
-
-	// 	}
-	// }
 }
