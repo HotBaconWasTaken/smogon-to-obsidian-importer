@@ -236,53 +236,8 @@ export default class MyPlugin extends Plugin {
 			<tr class="PokemonStats-speed">
 				<th><span class="PokemonStats-speed-title">Speed</span><span>:</span></th>
 				<td>${pokemon.spe}</td>
-				<td class="PokemonStats-speed-cell">
+				<td>
 					<div class="PokemonStats-bar" style="width:${pokemon.spe / 2}%;background-color:#ff0000;"></div>
-					<div class="PokemonStats-speed-popup">
-						<table>
-							<tbody>
-								<tr>
-									<td>Min (-ve nature, 0 IVs)</td>
-									<td>5</td>
-								</tr>
-								<tr>
-									<td>Default</td>
-									<td>8</td>
-								</tr>
-								<tr>
-									<td>Max Neutral</td>
-									<td>11</td>
-								</tr>
-								<tr>
-									<td>Max Positive</td>
-									<td>12</td>
-								</tr>
-								<tr>
-									<td>Max Neutral (+1)</td>
-									<td>16</td>
-								</tr>
-								<tr>
-									<td>Max Positive (+1)</td>
-									<td>18</td>
-								</tr>
-								<tr>
-									<td>Max Neutral (+2)</td>
-									<td>22</td>
-								</tr>
-								<tr>
-									<td>Max Positive (+2)</td>
-									<td>24</td>
-								</tr>
-								<tr>
-									<td colspan="2" class="PokemonStats-speed-popup-format">Little Cup</td>
-								</tr>
-								<tr>
-									<td>Water Absorb</td>
-									<td>7</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
 				</td>
 			</tr>
 		</tbody>
