@@ -4,19 +4,20 @@ import { dirname, join } from 'path';
 import { Request } from 'request';
 import { table } from 'console';
 
-
 interface PluginSettings {
-	test: string;
+	Font_Scaling: boolean;
+	Font_size: number;
 }
 
 const DEFAULT_SETTINGS: PluginSettings = {
-	test: "ses"
+	Font_Scaling: false,
+	Font_size: 10
 };
 
 export default class MyPlugin extends Plugin {
 	settings: PluginSettings;
 
-	static Poke_data = require('data.json');
+	static Poke_data = require('pokemon.json');
 	static Type_list = require('types.json');
 	obj: string = '';
 
@@ -155,7 +156,7 @@ export default class MyPlugin extends Plugin {
 						const is_hidden = pokemon.abilities[i + 1] === true ? '<is-hidden>Hidden</is-hidden>' : '';
 
 						Ability_list +=
-						`<li><a class="AbilityLink"><span>${pokemon.abilities[i]}</span> 
+							`<li><a class="AbilityLink"><span>${pokemon.abilities[i]}</span> 
 						<div class="AbilityPreview">
 						...
 						</div>
@@ -253,7 +254,7 @@ export default class MyPlugin extends Plugin {
 		</tbody>
 	</table>
 </div>`;
-					if(Ability_list)
+					if (Ability_list)
 						MyPlugin.loadAbStats(el.querySelectorAll('.AbilityPreview'), el, pokemon, 0, 0);
 				}
 
@@ -277,6 +278,8 @@ export default class MyPlugin extends Plugin {
 			DEFAULT_SETTINGS,
 			await this.loadData()
 		);
+
+		this.Font_Scaling_change(this.settings.Font_Scaling ? undefined : this.settings.Font_size);
 	}
 
 	async saveSettings() {
@@ -284,12 +287,12 @@ export default class MyPlugin extends Plugin {
 	}
 
 	onunload() {
-		
+
 	}
 
-	static async loadAbStats(AbilityPreview: any, el: HTMLElement, pokemon: any, i: number, j: number){
-		if(j === AbilityPreview.length) return;
-		if (pokemon.abilities[i] === true || pokemon.abilities[i] === false){
+	static async loadAbStats(AbilityPreview: any, el: HTMLElement, pokemon: any, i: number, j: number) {
+		if (j === AbilityPreview.length) return;
+		if (pokemon.abilities[i] === true || pokemon.abilities[i] === false) {
 			this.loadAbStats(AbilityPreview, el, pokemon, ++i, j);
 			return;
 		}
@@ -448,14 +451,36 @@ export default class MyPlugin extends Plugin {
 				console.log(JSON.stringify(MyPlugin.Poke_data));
 		});
 	}
+
+	Font_Scaling_change(value: number | undefined) {
+		document.documentElement.style.setProperty('--size', value ? value + 'px' : 'calc(.6vw + .6vh + .1vmin)');
+	}
 }
 
 class SettingTab extends PluginSettingTab {
 	plugin: MyPlugin;
+	if_Create_Slider = true;
+	static if_Create_Slider = true;
 
 	constructor(app: App, plugin: MyPlugin) {
 		super(app, plugin);
 		this.plugin = plugin;
+	}
+
+	Create_Slider(container: HTMLElement): void{
+		if(!this.plugin.settings.Font_Scaling){
+			new Setting(container).addSlider(slider => {
+				slider
+					.setLimits(1, 20, 1)
+					.setValue(this.plugin.settings.Font_size)
+					.setDynamicTooltip()
+					.onChange(async (value: number) => {
+						this.plugin.settings.Font_size = value;
+						this.plugin.Font_Scaling_change(value);
+						await this.plugin.saveSettings();
+					});
+			});
+		}
 	}
 
 	display(): void {
@@ -464,17 +489,22 @@ class SettingTab extends PluginSettingTab {
 		containerEl.createEl("h2", { text: "Settings for Smogon to Obsidian" });
 
 		new Setting(containerEl)
-			.setName("test")
-			.setDesc("sesss test")
-			.addTextArea((text) =>
-				text
-					.setValue(this.plugin.settings.test)
-					.onChange(async (value) => {
-						this.plugin.settings.test = value;
+			.setName("Font Scaling")
+			.setDesc("...")
+			.addToggle(toggle => {
+				toggle.setValue(this.plugin.settings.Font_Scaling)
+					.onChange(async value => {
+						this.plugin.settings.Font_Scaling = value;
+						this.plugin.Font_Scaling_change(value ? undefined : this.plugin.settings.Font_size);
+						this.if_Create_Slider = false;
+						this.display();
+						this.Create_Slider(containerEl);
 						await this.plugin.saveSettings();
-					})
-			);
+					});
+			});
 
-
+		if(this.if_Create_Slider)
+			this.Create_Slider(containerEl)
+		else this.if_Create_Slider = true;
 	}
 }
