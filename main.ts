@@ -3,7 +3,6 @@ import { fstat, readFileSync, writeFileSync, promises as fsPromises } from 'fs';
 import { dirname, join } from 'path';
 import { Request } from 'request';
 import { table } from 'console';
-import { Body } from 'node-fetch';
 
 export default class MyPlugin extends Plugin {
 	static Poke_data = require('data.json');
@@ -141,7 +140,7 @@ export default class MyPlugin extends Plugin {
 					let Ability_list = '';
 					for (let i = 0; i < pokemon.abilities.length; i++) {
 						if (pokemon.abilities[i] === true || pokemon.abilities[i] === false) continue;
-						const is_hidden = pokemon.abilities[i + 1] === true ? '<is-hidden style="background-color: #692c9c; border-radius: 5px; margin-left: 7px; padding: 2px; font-size: 12px; color:white; font-weight: bold;">Hidden</is-hidden>' : '';
+						const is_hidden = pokemon.abilities[i + 1] === true ? '<is-hidden>Hidden</is-hidden>' : '';
 
 						Ability_list +=
 						`<li><a class="AbilityLink"><span>${pokemon.abilities[i]}</span> 
@@ -154,44 +153,43 @@ export default class MyPlugin extends Plugin {
 					let PokemonAlt: HTMLElement = el;
 					PokemonAlt.addClass('pokemon-container');
 					PokemonAlt.innerHTML = `
-<div class="PokemonAltInfo">
 <div class="PokemonAltInfo-sprite">
 	<div style="background-image:url(https://www.smogon.com/dex/media/sprites/${Gen === 'GS' ? 'c' : Gen === 'SM' || Gen === 'SS' ? 'xy' : Gen.toLowerCase()}/${pokemon_name.toLowerCase()}.${Gen_number < 4 && Gen != 'GS' ? 'png' : 'gif'});"></div>
 </div>
 <div class="PokemonAltInfo-data">
 	<table class="PokemonSummary">
 		<tbody>
-			<tr>
-				<th><span class="PokemonSummary-type">Type</span></th>
-				<td>
-					<div class="PokemonSummary-types">
-						<ul class="TypeList">
-							${PokemonSummary_types}
-						</ul>
-					</div>
-					<div class="PokemonSummary-typeEffectivesPopup ">
-						<dl class="TypeEffectives">
-							${type_summary}
-						</dl>
-					</div>
-				</td>
-			</tr>
-			<tr>
-				<th>Abilities</th>
-				<td>
-					<ul class="AbilityList">
-						${Ability_list}
+		<tr>
+			<th><span class="PokemonSummary-type">Type</span></th>
+			<td>
+				<div class="PokemonSummary-types">
+					<ul class="TypeList">
+						${PokemonSummary_types}
 					</ul>
-				</td>
-			</tr>
-			<tr>
-				<th>Tier</th>
-				<td>
-					<ul class="FormatList">
-						${formats}
-					</ul>
-				</td>
-			</tr>
+				</div>
+				<div class="PokemonSummary-typeEffectivesPopup ">
+					<dl class="TypeEffectives">
+						${type_summary}
+					</dl>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<th>Abilities</th>
+			<td>
+				<ul class="AbilityList">
+					${Ability_list}
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<th>Tier</th>
+			<td>
+				<ul class="FormatList">
+					${formats}
+				</ul>
+			</td>
+		</tr>
 		</tbody>
 	</table>
 </div>
@@ -242,7 +240,6 @@ export default class MyPlugin extends Plugin {
 			</tr>
 		</tbody>
 	</table>
-</div>
 </div>`;
 					if(Ability_list)
 						MyPlugin.loadAbStats(el.querySelectorAll('.AbilityPreview'), el, pokemon, 0, 0);
