@@ -492,7 +492,10 @@ class SettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName("Font Scaling")
-			.setDesc("This setting makes the pokemon container size automatically scale based on the window width. <br>Disabling this setting lets you manually set the pokemon container size.")
+			.setDesc(createFragment((frag) => {
+				frag.createDiv().innerHTML = "This setting makes the pokemon container size automatically scale based on the window width." 
+				frag.createDiv().innerHTML = "Disabling this setting lets you manually set the pokemon container size."
+			}))
 			.addToggle(toggle => {
 				toggle.setValue(this.plugin.settings.Font_Scaling)
 					.onChange(async value => {
