@@ -213,42 +213,42 @@ export default class MyPlugin extends Plugin {
 				<th>HP:</th>
 				<td>${pokemon.hp}</td>
 				<td>
-					<div class="PokemonStats-bar" style="width:${pokemon.hp / 2}%;background-color:#ff1800;"></div>
+					<div class="PokemonStats-bar" style="width:${pokemon.hp * 100 / 260}%;background:hsl(${Math.floor((pokemon.hp/50*100 +5+31) * 180 / 714)},85%,45%);"></div>
 				</td>
 			</tr>
 			<tr>
 				<th>Attack:</th>
 				<td>${pokemon.atk}</td>
 				<td>
-					<div class="PokemonStats-bar" style="width:${pokemon.atk / 2}%;background-color:#ff0000;"></div>
+					<div class="PokemonStats-bar" style="width:${pokemon.atk * 100 / 260}%;background:hsl(${Math.floor((pokemon.atk/50*100 +5+31) * 180 / 714)},85%,45%);"></div>
 				</td>
 			</tr>
 			<tr>
 				<th>Defense:</th>
 				<td>${pokemon.def}</td>
 				<td>
-					<div class="PokemonStats-bar" style="width:${pokemon.def / 2}%;background-color:#ff0000;"></div>
+					<div class="PokemonStats-bar" style="width:${pokemon.def * 100 / 260}%;background:hsl(${Math.floor((pokemon.def/50*100 +5+31) * 180 / 714)},85%,45%);"></div>
 				</td>
 			</tr>
 			<tr>
 				<th>Sp. Atk:</th>
 				<td>${pokemon.spa}</td>
 				<td>
-					<div class="PokemonStats-bar" style="width:${pokemon.spa / 2}%;background-color:#ff0000;"></div>
+					<div class="PokemonStats-bar" style="width:${pokemon.spa * 100 / 260}%;background:hsl(${Math.floor((pokemon.spa/50*100 +5+31) * 180 / 714)},85%,45%);"></div>
 				</td>
 			</tr>
 			<tr>
 				<th>Sp. Def:</th>
 				<td>${pokemon.spd}</td>
 				<td>
-					<div class="PokemonStats-bar" style="width:${pokemon.spd / 2}%;background-color:#ff0000;"></div>
+					<div class="PokemonStats-bar" style="width:${pokemon.spd * 100 / 260}%;background:hsl(${Math.floor((pokemon.spd/50*100 +5+31) * 180 / 714)},85%,45%);"></div>
 				</td>
 			</tr>
-			<tr class="PokemonStats-speed">
-				<th><span class="PokemonStats-speed-title">Speed</span><span>:</span></th>
+			<tr>
+				<th>Speed:</th>
 				<td>${pokemon.spe}</td>
 				<td>
-					<div class="PokemonStats-bar" style="width:${pokemon.spe / 2}%;background-color:#ff0000;"></div>
+					<div class="PokemonStats-bar" style="width:${pokemon.spe * 100 / 260}%;background:hsl(${Math.floor((pokemon.spe/50*100 +5+31) * 180 / 714)},85%,45%);"></div>
 				</td>
 			</tr>
 		</tbody>
@@ -479,7 +479,9 @@ class SettingTab extends PluginSettingTab {
 						this.plugin.Font_Scaling_change(value);
 						await this.plugin.saveSettings();
 					});
-			});
+			})
+			.setName("Font Size Slider")
+			.setDesc("With this slider you can change the size of the container.");
 		}
 	}
 
@@ -490,7 +492,7 @@ class SettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName("Font Scaling")
-			.setDesc("...")
+			.setDesc("This setting makes the pokemon container size automatically scale based on the window width. <br>Disabling this setting lets you manually set the pokemon container size.")
 			.addToggle(toggle => {
 				toggle.setValue(this.plugin.settings.Font_Scaling)
 					.onChange(async value => {
@@ -503,8 +505,8 @@ class SettingTab extends PluginSettingTab {
 					});
 			});
 
-		if(this.if_Create_Slider)
-			this.Create_Slider(containerEl)
+		if(this.if_Create_Slider) 
+			this.Create_Slider(containerEl);
 		else this.if_Create_Slider = true;
 	}
 }
