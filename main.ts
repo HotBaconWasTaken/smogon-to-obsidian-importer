@@ -4,12 +4,24 @@ import { dirname, join } from 'path';
 import { Request } from 'request';
 import { table } from 'console';
 
+
+interface PluginSettings {
+	test: string;
+}
+
+const DEFAULT_SETTINGS: PluginSettings = {
+	test: "ses"
+};
+
 export default class MyPlugin extends Plugin {
+	settings: PluginSettings;
+
 	static Poke_data = require('data.json');
 	static Type_list = require('types.json');
 	obj: string = '';
 
 	async onload() {
+		await this.loadSettings();
 		const Generations = [
 			'RB',
 			'GS',
@@ -255,6 +267,20 @@ export default class MyPlugin extends Plugin {
 			},
 			100
 		);
+
+		this.addSettingTab(new SettingTab(this.app, this));
+	}
+
+	async loadSettings() {
+		this.settings = Object.assign(
+			{},
+			DEFAULT_SETTINGS,
+			await this.loadData()
+		);
+	}
+
+	async saveSettings() {
+		await this.saveData(this.settings);
 	}
 
 	onunload() {
@@ -421,5 +447,34 @@ export default class MyPlugin extends Plugin {
 			if (!json.next)
 				console.log(JSON.stringify(MyPlugin.Poke_data));
 		});
+	}
+}
+
+class SettingTab extends PluginSettingTab {
+	plugin: MyPlugin;
+
+	constructor(app: App, plugin: MyPlugin) {
+		super(app, plugin);
+		this.plugin = plugin;
+	}
+
+	display(): void {
+		const { containerEl } = this;
+		containerEl.empty();
+		containerEl.createEl("h2", { text: "Settings for Smogon to Obsidian" });
+
+		new Setting(containerEl)
+			.setName("test")
+			.setDesc("sesss test")
+			.addTextArea((text) =>
+				text
+					.setValue(this.plugin.settings.test)
+					.onChange(async (value) => {
+						this.plugin.settings.test = value;
+						await this.plugin.saveSettings();
+					})
+			);
+
+
 	}
 }
