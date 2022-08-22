@@ -1,5 +1,5 @@
 import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting, MarkdownPostProcessorContext } from 'obsidian';
-import { fstat, readFileSync, writeFileSync, promises as fsPromises } from 'fs';
+import { fstat, readFileSync, writeFileSync, promises as fsPromises, stat } from 'fs';
 import { dirname, join } from 'path';
 import { Request } from 'request';
 import { table } from 'console';
@@ -13,6 +13,14 @@ const DEFAULT_SETTINGS: PluginSettings = {
 	Font_Scaling: false,
 	Font_size: 10
 };
+
+interface ContainersCache {
+	Observer: ResizeObserver;
+	Container: HTMLElement;
+}
+
+let Timers: any[] = [];
+let ContainersCache_settings: ContainersCache[] = [];
 
 export default class MyPlugin extends Plugin {
 	settings: PluginSettings;
@@ -213,47 +221,68 @@ export default class MyPlugin extends Plugin {
 				<th>HP:</th>
 				<td>${pokemon.hp}</td>
 				<td>
-					<div class="PokemonStats-bar" style="width:${pokemon.hp * 100 / 260}%;background:hsl(${Math.floor((pokemon.hp/50*100 +5+31) * 180 / 714)},85%,45%);"></div>
+					<div class="PokemonStats-bar" style="width:${pokemon.hp * 100 / 260}%;background:hsl(${Math.floor((pokemon.hp / 50 * 100 + 5 + 31) * 180 / 714)},85%,45%);"></div>
 				</td>
 			</tr>
 			<tr>
 				<th>Attack:</th>
 				<td>${pokemon.atk}</td>
 				<td>
-					<div class="PokemonStats-bar" style="width:${pokemon.atk * 100 / 260}%;background:hsl(${Math.floor((pokemon.atk/50*100 +5+31) * 180 / 714)},85%,45%);"></div>
+					<div class="PokemonStats-bar" style="width:${pokemon.atk * 100 / 260}%;background:hsl(${Math.floor((pokemon.atk / 50 * 100 + 5 + 31) * 180 / 714)},85%,45%);"></div>
 				</td>
 			</tr>
 			<tr>
 				<th>Defense:</th>
 				<td>${pokemon.def}</td>
 				<td>
-					<div class="PokemonStats-bar" style="width:${pokemon.def * 100 / 260}%;background:hsl(${Math.floor((pokemon.def/50*100 +5+31) * 180 / 714)},85%,45%);"></div>
+					<div class="PokemonStats-bar" style="width:${pokemon.def * 100 / 260}%;background:hsl(${Math.floor((pokemon.def / 50 * 100 + 5 + 31) * 180 / 714)},85%,45%);"></div>
 				</td>
 			</tr>
 			<tr>
 				<th>Sp. Atk:</th>
 				<td>${pokemon.spa}</td>
 				<td>
-					<div class="PokemonStats-bar" style="width:${pokemon.spa * 100 / 260}%;background:hsl(${Math.floor((pokemon.spa/50*100 +5+31) * 180 / 714)},85%,45%);"></div>
+					<div class="PokemonStats-bar" style="width:${pokemon.spa * 100 / 260}%;background:hsl(${Math.floor((pokemon.spa / 50 * 100 + 5 + 31) * 180 / 714)},85%,45%);"></div>
 				</td>
 			</tr>
 			<tr>
 				<th>Sp. Def:</th>
 				<td>${pokemon.spd}</td>
 				<td>
-					<div class="PokemonStats-bar" style="width:${pokemon.spd * 100 / 260}%;background:hsl(${Math.floor((pokemon.spd/50*100 +5+31) * 180 / 714)},85%,45%);"></div>
+					<div class="PokemonStats-bar" style="width:${pokemon.spd * 100 / 260}%;background:hsl(${Math.floor((pokemon.spd / 50 * 100 + 5 + 31) * 180 / 714)},85%,45%);"></div>
 				</td>
 			</tr>
 			<tr>
 				<th>Speed:</th>
 				<td>${pokemon.spe}</td>
 				<td>
-					<div class="PokemonStats-bar" style="width:${pokemon.spe * 100 / 260}%;background:hsl(${Math.floor((pokemon.spe/50*100 +5+31) * 180 / 714)},85%,45%);"></div>
+					<div class="PokemonStats-bar" style="width:${pokemon.spe * 100 / 260}%;background:hsl(${Math.floor((pokemon.spe / 50 * 100 + 5 + 31) * 180 / 714)},85%,45%);"></div>
 				</td>
 			</tr>
 		</tbody>
 	</table>
 </div>`;
+
+					Timers.push(undefined);
+					const length = Timers.length -1;
+					ContainersCache_settings.push({
+						Observer: new ResizeObserver((call) => {
+							clearTimeout(Timers[length]);
+							Timers[length] = setTimeout(() => {
+								const width = call[0].borderBoxSize[0].inlineSize;
+								//const setting_font_size;
+								document.documentElement.style.setProperty('--bar-height', `${width * 12 / 700}px`);
+								document.documentElement.style.setProperty('--font-size', `${width / 50}px`);
+								
+							}, 10);
+						}),
+						Container: (ctx as any).containerEl
+					});
+
+					if(this.settings.Font_Scaling) ContainersCache_settings[length].Observer.observe(
+						ContainersCache_settings[length].Container
+					)
+
 					if (Ability_list)
 						MyPlugin.loadAbStats(el.querySelectorAll('.AbilityPreview'), el, pokemon, 0, 0);
 				}
@@ -278,8 +307,6 @@ export default class MyPlugin extends Plugin {
 			DEFAULT_SETTINGS,
 			await this.loadData()
 		);
-
-		this.Font_Scaling_change(this.settings.Font_Scaling ? undefined : this.settings.Font_size);
 	}
 
 	async saveSettings() {
@@ -452,8 +479,15 @@ export default class MyPlugin extends Plugin {
 		});
 	}
 
-	Font_Scaling_change(value: number | undefined) {
-		document.documentElement.style.setProperty('--size', value ? value + 'px' : 'calc(.6vw + .6vh + .1vmin)');
+	Font_Scaling_change(value: boolean) {
+		if(value)
+			for (let i = 0; i < ContainersCache_settings.length; i++) {
+				ContainersCache_settings[i].Observer.observe(ContainersCache_settings[i].Container);
+			}
+		else
+			for (let i = 0; i < ContainersCache_settings.length; i++) {
+				ContainersCache_settings[i].Observer.disconnect();
+			}
 	}
 }
 
@@ -467,23 +501,23 @@ class SettingTab extends PluginSettingTab {
 		this.plugin = plugin;
 	}
 
-	Create_Slider(container: HTMLElement): void{
-		if(!this.plugin.settings.Font_Scaling){
-			new Setting(container).addSlider(slider => {
-				slider
-					.setLimits(1, 20, 1)
-					.setValue(this.plugin.settings.Font_size)
-					.setDynamicTooltip()
-					.onChange(async (value: number) => {
-						this.plugin.settings.Font_size = value;
-						this.plugin.Font_Scaling_change(value);
-						await this.plugin.saveSettings();
-					});
-			})
-			.setName("Font Size Slider")
-			.setDesc("With this slider you can change the size of the container.");
-		}
-	}
+	// Create_Slider(container: HTMLElement): void{
+	// 	if(!this.plugin.settings.Font_Scaling){
+	// 		new Setting(container).addSlider(slider => {
+	// 			slider
+	// 				.setLimits(1, 20, 1)
+	// 				.setValue(this.plugin.settings.Font_size)
+	// 				.setDynamicTooltip()
+	// 				.onChange(async (value: number) => {
+	// 					this.plugin.settings.Font_size = value;
+	// 					this.plugin.Font_Scaling_change(value);
+	// 					await this.plugin.saveSettings();
+	// 				});
+	// 		})
+	// 		.setName("Font Size Slider")
+	// 		.setDesc("With this slider you can change the size of the container.");
+	// 	}
+	// }
 
 	display(): void {
 		const { containerEl } = this;
@@ -493,23 +527,32 @@ class SettingTab extends PluginSettingTab {
 		new Setting(containerEl)
 			.setName("Font Scaling")
 			.setDesc(createFragment((frag) => {
-				frag.createDiv().innerHTML = "This setting makes the pokemon container size automatically scale based on the window width." 
+				frag.createDiv().innerHTML = "This setting makes the pokemon container size automatically scale based on the window width."
 				frag.createDiv().innerHTML = "Disabling this setting lets you manually set the pokemon container size."
 			}))
 			.addToggle(toggle => {
 				toggle.setValue(this.plugin.settings.Font_Scaling)
 					.onChange(async value => {
 						this.plugin.settings.Font_Scaling = value;
-						this.plugin.Font_Scaling_change(value ? undefined : this.plugin.settings.Font_size);
-						this.if_Create_Slider = false;
-						this.display();
-						this.Create_Slider(containerEl);
+						// this.plugin.Font_Scaling_change(value ? undefined : this.plugin.settings.Font_size);
+						// this.if_Create_Slider = false;
+						this.plugin.Font_Scaling_change(value);
 						await this.plugin.saveSettings();
 					});
 			});
 
-		if(this.if_Create_Slider) 
-			this.Create_Slider(containerEl);
-		else this.if_Create_Slider = true;
+		// new Setting(containerEl).addSlider(slider => {
+		// 	slider
+		// 		.setLimits(1, 20, 1)
+		// 		.setValue(this.plugin.settings.Font_size)
+		// 		.setDynamicTooltip()
+		// 		.onChange(async (value: number) => {
+		// 			this.plugin.settings.Font_size = value;
+		// 			this.plugin.Font_Scaling_change(value);
+		// 			await this.plugin.saveSettings();
+		// 		});
+		// })
+		// 	.setName("Font Size Slider")
+		// 	.setDesc("With this slider you can change the size of the container.");
 	}
 }

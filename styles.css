@@ -1,5 +1,6 @@
 :root {
-    --size: calc(.6vw + .6vh + .1vmin);
+    --bar-height: 12px;
+    --font-size: 18px;
 }
 
 .pokemon-container th,
@@ -9,14 +10,12 @@
 }
 
 .pokemon-container {
-    font-size: var(--size);
+    font-size: var(--font-size);
 
     background-color: rgba(255, 255, 255, 0.059);
     border-radius: 20px;
     margin-bottom: 5px;
     border: 1px solid black;
-    align-items: center;
-
     box-sizing: border-box;
     display: flex;
 }
