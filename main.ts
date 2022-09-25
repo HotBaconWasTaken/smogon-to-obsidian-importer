@@ -267,15 +267,18 @@ export default class MyPlugin extends Plugin {
 					const length = Timers.length -1;
 					ContainersCache_settings.push({
 						Observer: new ResizeObserver((call) => {
-							clearTimeout(Timers[length]);
-							Timers[length] = setTimeout(() => {
-								const width = call[0].borderBoxSize[0].inlineSize;
-								//const setting_font_size;
-								document.documentElement.style.setProperty('--bar-height', `${width * 12 / 700}px`);
-								document.documentElement.style.setProperty('--font-size', `${width / 50}px`);
-								
-							}, 10);
-						}),
+
+                                const width = call[0].borderBoxSize[0].inlineSize;
+
+                                // //const setting_font_size;
+                                // document.documentElement.style.setProperty('--bar-height', `${width * 12 / 700}px`);
+                                // document.documentElement.style.setProperty('--font-size', `${width * font_attuale / 700}px`);
+                                PokemonAlt.style.transform = 'scale(' + width/700 + ') translateX(' + (700 * ((width/700) - 1))/2 +'px)';
+                                
+                                PokemonAlt.style.marginBottom = (200 * width / 700) - PokemonAlt.clientHeight  + 'px';
+                                PokemonAlt.style.marginLeft = (width - 700) / 3 + 'px';
+								console.log('document width ' + width); // cambia	
+                        }),
 						Container: (ctx as any).containerEl
 					});
 
@@ -392,7 +395,7 @@ export default class MyPlugin extends Plugin {
 		const lines = this.stringToHTML(str);
 		let Obj: any = {};
 
-		console.log(lines);
+		// console.log(lines);
 
 		let divs = lines.getElementsByTagName('div');
 
@@ -423,9 +426,9 @@ export default class MyPlugin extends Plugin {
 			}
 		}
 
-		console.log(Obj);
+		// console.log(Obj);
 
-		console.log(JSON.stringify(Obj));
+		// console.log(JSON.stringify(Obj));
 
 	}
 
