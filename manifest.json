@@ -1,9 +1,9 @@
 {
-	"id": "smogon-to-obsidian-importer",
-	"name": "Smogon Pokemon Importer",
+	"id": "obsidian-js-code-executer",
+	"name": "JavaScript Code Executer",
 	"version": "1.0",
 	"minAppVersion": "0.12.0",
-	"description": "This is a plugin that lets you display the basic essential informations about competitive pokemons from 'smogon.com'.",
+	"description": "This plugin lets you write javascript codeblocks in your notes whenever you compile them.",
 	"author": "HotBacon",
 	"authorUrl": "https://github.com/HotBaconWasTaken",
 	"isDesktopOnly": true
